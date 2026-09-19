@@ -41,7 +41,7 @@ public class MailCodeServiceImpl implements MailCodeService {
         String code = String.valueOf((int) ((Math.random() * 9 + 1) * 100000));
 
         // 2. 发送邮件（subject 自动按 type 拼）
-        String subject = String.format("[NovaAdmin] %s验证码", effectiveType.getLabel());
+        String subject = String.format("[ZyxhitAdmin] %s验证码", effectiveType.getLabel());
         mailService.sendMail(email, subject,
                 "您的验证码为：" + code + "，请在 5 分钟内使用");
 

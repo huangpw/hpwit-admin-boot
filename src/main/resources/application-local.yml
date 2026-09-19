@@ -6,7 +6,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/nova_admin_boot?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&allowMultiQueries=true
+    url: jdbc:mysql://127.0.0.1:3306/zyxhit_admin_boot?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&allowMultiQueries=true
     username: root
     password: 123456
 
@@ -39,9 +39,9 @@ spring:
     # 默认 163 邮箱示例，请按需修改
     host: smtp.163.com
     port: 465
-    username: novaadmin@example.com
+    username: zyxhitadmin@example.com
     password: your-mail-auth-code
-    from: novaadmin@example.com
+    from: zyxhitadmin@example.com
     default-encoding: UTF-8
     properties:
       mail:
@@ -84,15 +84,15 @@ oss:
     endpoint: http://127.0.0.1:9000
     access-key: minioadmin
     secret-key: minioadmin
-    bucket-name: nova-admin
+    bucket-name: zyxhit-admin
     custom-domain:
   aliyun:
     endpoint: oss-cn-hangzhou.aliyuncs.com
     access-key-id: your-access-key-id
     access-key-secret: your-access-key-secret
-    bucket-name: nova-admin
+    bucket-name: zyxhit-admin
   local:
-    storage-path: D:/nova-admin-files/
+    storage-path: D:/zyxhit-admin-files/
 
 # ==================== springdoc ====================
 springdoc:
@@ -128,7 +128,7 @@ sms:
     access-key-id: your-access-key-id
     access-key-secret: your-access-key-secret
     # 短信签名（必须已审核通过）
-    sign-name: NovaAdmin
+    sign-name: ZyxhitAdmin
     # 短信模板（key 对应 SmsTypeEnum.getValue()）
     templates:
       login: SMS_xxx_001      # 登录验证码

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: nova-admin-boot
+    name: zyxhit-admin-boot
   profiles:
     active: local
 #    active: dev
