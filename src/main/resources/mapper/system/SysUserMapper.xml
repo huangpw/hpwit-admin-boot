@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nova.system.mapper.SysUserMapper">
+
+    <!-- 用户分页列表 -->
+    <select id="getUserPage" resultType="com.nova.system.model.vo.SysUserPageVo">
+        SELECT
+            u.id,
+            u.username,
+            u.nickname,
+            u.mobile,
+            u.gender,
+            u.avatar,
+            u.email,
+            u.status,
+            u.dept_id,
+            d.name AS dept_name,
+            GROUP_CONCAT(r.id) AS roleIds,
+            GROUP_CONCAT(r.name) AS roleNames,
+            u.create_time,
+            u.remark
+        FROM sys_user u
+        LEFT JOIN sys_dept d ON u.dept_id = d.id
+        LEFT JOIN sys_user_role sur ON u.id = sur.user_id
+        LEFT JOIN sys_role r ON sur.role_id = r.id
+        <where>
+            u.is_deleted = 0
+            <!-- 非超级管理员用户限制查看超级管理员 -->
+            <if test="!query.isRoot">
+                AND NOT EXISTS (
+                SELECT 1
+                FROM sys_user_role sur
+                INNER JOIN sys_role r ON sur.role_id = r.id
+                WHERE
+                sur.user_id = u.id
+                AND r.code = '${@com.nova.common.constant.SysConstant@ROOT_ROLE_CODE}'
+                )
+            </if>
+
+            <if test="query.username != null and query.username.trim() != ''">
+                AND u.username LIKE CONCAT('%', #{query.username}, '%')
+            </if>
+
+            <if test="query.nickname != null and query.nickname.trim() != ''">
+                AND u.nickname LIKE CONCAT('%', #{query.nickname}, '%')
+            </if>
+
+            <if test="query.mobile != null and query.mobile.trim() != ''">
+                AND u.mobile LIKE CONCAT('%', #{query.mobile}, '%')
+            </if>
+
+            <if test='query.status!=null'>
+                AND u.status = #{queryParams.status}
+            </if>
+
+            <if test='query.deptId!=null'>
+                AND concat(',',concat(d.tree_path,',',d.id),',') like concat('%,',#{query.deptId},',%')
+            </if>
+
+            <if test="query.createTime != null and query.createTime.size > 0">
+                <!-- 开始日期 -->
+                <if test="query.createTime[0] != null and query.createTime[0] != ''">
+                    <bind name="startDate" value="query.createTime[0].length() == 10 ? query.createTime[0] + ' 00:00:00' : query.createTime[0]"/>
+                    AND u.create_time &gt;= #{startDate}
+                </if>
+                <!-- 结束日期 -->
+                <if test="query.createTime[1] != null and query.createTime[1] != ''">
+                    <bind name="endDate" value="query.createTime[1].length() == 10 ? query.createTime[1] + ' 23:59:59' : query.createTime[1]"/>
+                    AND u.create_time &lt;= #{endDate}
+                </if>
+            </if>
+        </where>
+        GROUP BY
+        u.id
+        ORDER BY u.update_time DESC, u.create_time DESC
+        <!--<choose>-->
+        <!--    &lt;!&ndash; 如果排序参数都传入 &ndash;&gt;-->
+        <!--    <when test="query.field != null and query.field != '' and query.direction != null">-->
+        <!--        ORDER BY u.${query.field} ${query.direction}-->
+        <!--    </when>-->
+        <!--    &lt;!&ndash; 默认排序 &ndash;&gt;-->
+        <!--    <otherwise>-->
+        <!--        ORDER BY u.update_time DESC, u.create_time DESC-->
+        <!--    </otherwise>-->
+        <!--</choose>-->
+    </select>
+
+    <!-- 用户表单信息映射 -->
+    <resultMap id="UserFormMap" type="com.nova.system.model.form.SysUserForm">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="TINYINT"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="BOOLEAN"/>
+        <result property="deptId" column="dept_id" jdbcType="BIGINT"/>
+        <collection
+                property="roleIds"
+                column="id"
+                select="com.nova.system.mapper.SysUserRoleMapper.listRoleIdsByUserId" >
+            <result column="role_id" />
+        </collection>
+    </resultMap>
+
+    <!-- 根据用户ID获取用户详情 -->
+    <select id="getUserFormData" resultMap="UserFormMap">
+        SELECT
+            id,
+            username,
+            nickname,
+            mobile,
+            gender,
+            avatar,
+            email,
+            status,
+            dept_id
+        FROM
+            sys_user
+        WHERE
+            id = #{userId} AND is_deleted = 0
+    </select>
+
+</mapper>

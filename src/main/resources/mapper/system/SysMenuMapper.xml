@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nova.system.mapper.SysMenuMapper">
+
+    <select id="selectPermListByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT DISTINCT a.perm
+        FROM sys_menu a
+                 LEFT JOIN sys_role_menu b ON a.id = b.menu_id
+                 LEFT JOIN sys_user_role c ON b.role_id = c.role_id
+        WHERE a.type = 4
+          AND c.user_id = #{userId}
+          AND a.perm IS NOT NULL
+    </select>
+
+    <!-- 获取路由列表 -->
+    <select id="getMenusByRoleCodes" resultType="com.nova.system.model.entity.SysMenu">
+        SELECT
+            DISTINCT t1.id,
+            t1.name,
+            t1.parent_id,
+            t1.route_name,
+            t1.route_path,
+            t1.component,
+            t1.icon,
+            t1.sort,
+            t1.visible,
+            t1.redirect,
+            t1.type,
+            t1.always_show,
+            t1.keep_alive,
+            t1.params
+        FROM
+        sys_menu t1
+        INNER JOIN sys_role_menu t2 ON t1.id = t2.menu_id
+        INNER JOIN sys_role t3 ON t2.role_id = t3.id AND t3.status = 1 AND t3.is_deleted = 0
+        WHERE
+        t1.type != '${@com.nova.common.enums.MenuTypeEnum@BUTTON.getValue()}'
+        <choose>
+            <when test="roleCodes != null and roleCodes.size() > 0">
+                AND t3.code IN
+                <foreach item="roleCode" open="(" close=")" separator="," collection="roleCodes">
+                    #{roleCode}
+                </foreach>
+            </when>
+            <otherwise>
+                AND 1 = 0
+            </otherwise>
+        </choose>
+        ORDER BY t1.sort
+    </select>
+
+    <!-- 字典分页列表 -->
+    <!--<select id="selectDictList" resultType="com.lci.system.model.vo.SysDictVo">-->
+    <!--    SELECT-->
+    <!--        t1.id,-->
+    <!--        t1.name,-->
+    <!--        t1.dictCode,-->
+    <!--        t1.status-->
+    <!--    FROM-->
+    <!--        sys_dict t1-->
+    <!--    <where>-->
+    <!--        t1.isDelete = 0-->
+    <!--        <if test='queryParams.keywords!=null and queryParams.keywords.trim() neq ""'>-->
+    <!--            AND (-->
+    <!--                t1.name LIKE CONCAT('%',#{queryParams.keywordValue},'%')-->
+    <!--                OR-->
+    <!--                t1.dictCode LIKE CONCAT('%',#{queryParams.keywordValue},'%')-->
+    <!--            )-->
+    <!--        </if>-->
+    <!--    </where>-->
+    <!--    ORDER BY-->
+    <!--        t1.createTime DESC-->
+    <!--</select>-->
+
+</mapper>

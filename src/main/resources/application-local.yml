@@ -1,0 +1,136 @@
+server:
+  port: 8606
+
+spring:
+  # ==================== 数据库配置 ====================
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/nova_admin_boot?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&allowMultiQueries=true
+    username: root
+    password: 123456
+
+  data:
+    # ==================== Redis 配置 ====================
+    redis:
+      database: 3
+      host: 127.0.0.1
+      port: 6379
+      # 如果 Redis 未设置密码，请删除 password 或注释，不要设置为空字符串
+      password: 123456
+      timeout: 10s
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1
+          max-idle: 8
+          min-idle: 0
+
+  cache:
+    enabled: false
+    type: redis            # 缓存类型 redis / none
+    redis:
+      time-to-live: 3600000
+      cache-null-values: true   # 缓存 null 值，防止缓存穿透
+    caffeine:
+      spec: initialCapacity=50,maximumSize=1000,expireAfterWrite=600s
+
+  mail:
+    # 默认 163 邮箱示例，请按需修改
+    host: smtp.163.com
+    port: 465
+    username: novaadmin@example.com
+    password: your-mail-auth-code
+    from: novaadmin@example.com
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          starttls:
+            enable: true
+            required: true
+
+# ==================== MyBatis-Plus 配置 ====================
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: none
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# ==================== Sa-Token 配置 ====================
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 86400           # 1 天
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false
+
+# ==================== 文件存储配置 ====================
+oss:
+  type: local               # minio / aliyun / local
+  minio:
+    endpoint: http://127.0.0.1:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: nova-admin
+    custom-domain:
+  aliyun:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    access-key-id: your-access-key-id
+    access-key-secret: your-access-key-secret
+    bucket-name: nova-admin
+  local:
+    storage-path: D:/nova-admin-files/
+
+# ==================== springdoc ====================
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: "全部接口"
+      paths-to-match: "/**"
+      packages-to-scan:
+        - com.nova.auth.controller
+        - com.nova.system.controller
+        - com.nova.platform.file.controller
+        - com.nova.platform.mail.controller
+        - com.nova.platform.qrcode.controller
+        - com.nova.platform.sms.controller
+  default-flat-param-object: true
+
+# ==================== Knife4j 文档 ====================
+knife4j:
+  enable: true
+  production: false
+  setting:
+    language: zh_cn
+
+# ==================== 阿里云短信 ====================
+sms:
+  aliyun:
+    # 阿里云控制台 → AccessKey 管理
+    access-key-id: your-access-key-id
+    access-key-secret: your-access-key-secret
+    # 短信签名（必须已审核通过）
+    sign-name: NovaAdmin
+    # 短信模板（key 对应 SmsTypeEnum.getValue()）
+    templates:
+      login: SMS_xxx_001      # 登录验证码
+      register: SMS_xxx_002   # 注册验证码
+      mobile: SMS_xxx_003     # 换绑手机验证码

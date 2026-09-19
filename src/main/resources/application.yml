@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: nova-admin-boot
+  profiles:
+    active: local
+#    active: dev
+#    active: test
+#    active: prod
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+# 在 banner.txt 中显示项目版本，使用 @project.version@ 从 pom.xml 获取
+project:
+  version: "@project.version@"
