@@ -91,12 +91,12 @@ springdoc:
     - group: "系统管理"
       paths-to-match: "/**"
       packages-to-scan:
-        - com.nova.auth.controller
-        - com.nova.system.controller
-        - com.nova.platform.file.controller
-        - com.nova.platform.mail.controller
-        - com.nova.platform.qrcode.controller
-        - com.nova.platform.sms.controller
+        - com.hpwit.auth.controller
+        - com.hpwit.system.controller
+        - com.hpwit.platform.file.controller
+        - com.hpwit.platform.mail.controller
+        - com.hpwit.platform.qrcode.controller
+        - com.hpwit.platform.sms.controller
   default-flat-param-object: true
 
 # 生产环境关闭 Knife4j 文档

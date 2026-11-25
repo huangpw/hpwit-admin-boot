@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.nova.system.mapper.SysUserMapper">
+<mapper namespace="com.hpwit.system.mapper.SysUserMapper">
 
     <!-- 用户分页列表 -->
-    <select id="getUserPage" resultType="com.nova.system.model.vo.SysUserPageVo">
+    <select id="getUserPage" resultType="com.hpwit.system.model.vo.SysUserPageVo">
         SELECT
             u.id,
             u.username,
@@ -35,7 +35,7 @@
                 INNER JOIN sys_role r ON sur.role_id = r.id
                 WHERE
                 sur.user_id = u.id
-                AND r.code = '${@com.nova.common.constant.SysConstant@ROOT_ROLE_CODE}'
+                AND r.code = '${@com.hpwit.common.constant.SysConstant@ROOT_ROLE_CODE}'
                 )
             </if>
 
@@ -88,7 +88,7 @@
     </select>
 
     <!-- 用户表单信息映射 -->
-    <resultMap id="UserFormMap" type="com.nova.system.model.form.SysUserForm">
+    <resultMap id="UserFormMap" type="com.hpwit.system.model.form.SysUserForm">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="username" column="username" jdbcType="VARCHAR"/>
         <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
@@ -101,7 +101,7 @@
         <collection
                 property="roleIds"
                 column="id"
-                select="com.nova.system.mapper.SysUserRoleMapper.listRoleIdsByUserId" >
+                select="com.hpwit.system.mapper.SysUserRoleMapper.listRoleIdsByUserId" >
             <result column="role_id" />
         </collection>
     </resultMap>

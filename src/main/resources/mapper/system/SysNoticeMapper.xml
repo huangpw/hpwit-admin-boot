@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.nova.system.mapper.SysNoticeMapper">
+<mapper namespace="com.hpwit.system.mapper.SysNoticeMapper">
 
     <!-- 获取通知公告分页列表 -->
-    <select id="getNoticePage" resultType="com.nova.system.model.bo.SysNoticeBo">
+    <select id="getNoticePage" resultType="com.hpwit.system.model.bo.SysNoticeBo">
         SELECT
                 t1.id,
                 t1.title,
@@ -42,7 +42,7 @@
     </select>
 
     <!-- 获取通知公告详情 -->
-    <select id="getNoticeDetail" resultType="com.nova.system.model.bo.SysNoticeBo">
+    <select id="getNoticeDetail" resultType="com.hpwit.system.model.bo.SysNoticeBo">
         SELECT
             t1.id,
             t1.title,

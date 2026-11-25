@@ -2,10 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.nova.system.mapper.SysLogMapper">
+<mapper namespace="com.hpwit.system.mapper.SysLogMapper">
 
     <!-- 日志分页列表 -->
-    <select id="getLogPage" resultType="com.nova.system.model.vo.SysLogPageVo">
+    <select id="getLogPage" resultType="com.hpwit.system.model.vo.SysLogPageVo">
         SELECT
             t1.id,
             t1.module,
@@ -47,7 +47,7 @@
     </select>
 
     <!-- 根据请求参数查询最新一条日志记录 -->
-    <select id="selectLatestByRequestParams" resultType="com.nova.system.model.entity.SysLog">
+    <select id="selectLatestByRequestParams" resultType="com.hpwit.system.model.entity.SysLog">
         SELECT *
         FROM (
             SELECT *,
