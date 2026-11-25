@@ -1,5 +1,5 @@
 -- ============================================================
--- zyxhit-admin-boot 系统配置表 seed
+-- hpwit-admin-boot 系统配置表 seed
 -- sys_config：系统级参数（当前唯一消费方为 IP 限流过滤器 RateLimiterFilter）
 -- DDL 与预置数据移植自 youlai-boot youlai_admin.sql 的 sys_config 部分
 -- 适用 MySQL 8.x（utf8mb4 / InnoDB），可重复执行

@@ -1,16 +1,26 @@
 package com.hpwit.config;
 
+import com.hpwit.auth.controller.AuthController;
+import com.hpwit.platform.file.controller.FileController;
+import com.hpwit.platform.mail.controller.MailController;
+import com.hpwit.platform.qrcode.controller.QrCodeController;
+import com.hpwit.platform.sms.controller.SmsController;
+import com.hpwit.system.controller.SysRoleController;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author huangpw
@@ -19,8 +29,55 @@ import org.springframework.http.HttpHeaders;
 @Configuration
 public class Knife4jConfig {
 
+    private static final List<String> PLATFORM_CONTROLLER_PACKAGES = List.of(
+            FileController.class.getPackageName(),
+            MailController.class.getPackageName(),
+            QrCodeController.class.getPackageName(),
+            SmsController.class.getPackageName()
+    );
+
     @Autowired
     private Environment environment;
+
+    /**
+     * 认证管理接口文档配置
+     */
+    @Bean
+    public GroupedOpenApi authOpenApi() {
+        return GroupedOpenApi.builder()
+                .group("auth")
+                .pathsToMatch("/**")
+                .packagesToScan(AuthController.class.getPackageName())
+                .build();
+    }
+
+    /**
+     * 系统管理接口文档配置
+     */
+    @Bean
+    public GroupedOpenApi systemOpenApi() {
+        List<String> packages = new ArrayList<>();
+        packages.add(SysRoleController.class.getPackageName());
+        packages.addAll(PLATFORM_CONTROLLER_PACKAGES);
+
+        return GroupedOpenApi.builder()
+                .group("system")
+                .pathsToMatch("/**")
+                .packagesToScan(packages.toArray(String[]::new))
+                .build();
+    }
+
+    /**
+     * 平台管理接口文档配置
+     */
+    @Bean
+    public GroupedOpenApi platformOpenApi() {
+        return GroupedOpenApi.builder()
+                .group("platform")
+                .pathsToMatch("/**")
+                .packagesToScan(PLATFORM_CONTROLLER_PACKAGES.toArray(String[]::new))
+                .build();
+    }
 
     /**
      * 接口文档信息
@@ -40,9 +97,9 @@ public class Knife4jConfig {
                                 .url("http://www.apache.org/licenses/LICENSE-2.0")
                         )
                         .contact(new Contact()
-                                .name("Zyxhit Admin")
-                                .email("zyxhit-admin@example.com")
-                                .url("https://github.com/your-org/zyxhit-admin")
+                                .name("Hpwit Admin")
+                                .email("hpwit-admin@example.com")
+                                .url("https://github.com/your-org/hpwit-admin")
                         )
                 )
                 // 配置全局鉴权参数-Authorize

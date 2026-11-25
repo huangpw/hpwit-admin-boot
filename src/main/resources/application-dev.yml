@@ -1,12 +1,12 @@
 server:
-  port: 8606
+  port: 8866
 
 spring:
   # ==================== 数据库配置 ====================
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://43.135.150.148:3366/zyxhit_admin_boot?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&allowMultiQueries=true
+    url: jdbc:mysql://43.135.150.148:3366/hpwit_admin_boot?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&allowMultiQueries=true
     username: root
     password: myzy@123456
 
@@ -36,9 +36,9 @@ spring:
   mail:
     host: smtp.163.com
     port: 465
-    username: zyxhitadmin@example.com
+    username: hpwitadmin@example.com
     password: your-mail-auth-code
-    from: zyxhitadmin@example.com
+    from: hpwitadmin@example.com
     default-encoding: UTF-8
     properties:
       mail:
@@ -68,7 +68,7 @@ mybatis-plus:
 sa-token:
   token-name: Authorization
   token-prefix: Bearer
-  timeout: 86400
+  timeout: 2592000
   active-timeout: -1
   is-concurrent: true
   is-share: true
@@ -77,20 +77,26 @@ sa-token:
 
 # ==================== 文件存储 ====================
 oss:
-  type: local
+  type: ${OSS_TYPE:local}
   minio:
     endpoint: http://127.0.0.1:9000
     access-key: minioadmin
     secret-key: minioadmin
-    bucket-name: zyxhit-admin
+    bucket-name: hpwit-admin
     custom-domain:
   aliyun:
     endpoint: oss-cn-hangzhou.aliyuncs.com
     access-key-id: your-access-key-id
     access-key-secret: your-access-key-secret
-    bucket-name: zyxhit-admin
+    bucket-name: hpwit-admin
+  tencent:
+    region: ${COS_REGION:}
+    secret-id: ${COS_SECRET_ID:}
+    secret-key: ${COS_SECRET_KEY:}
+    bucket-name: ${COS_BUCKET_NAME:}
+    custom-domain: ${COS_CUSTOM_DOMAIN:}
   local:
-    storage-path: D:/zyxhit-admin-files/
+    storage-path: /Users/apple/Projects/HpwProjects/files/
 
 # ==================== springdoc ====================
 springdoc:
@@ -100,16 +106,6 @@ springdoc:
     tags-sorter: alpha
   api-docs:
     path: /v3/api-docs
-  group-configs:
-    - group: "全部接口"
-      paths-to-match: "/**"
-      packages-to-scan:
-        - com.hpwit.auth.controller
-        - com.hpwit.system.controller
-        - com.hpwit.platform.file.controller
-        - com.hpwit.platform.mail.controller
-        - com.hpwit.platform.qrcode.controller
-        - com.hpwit.platform.sms.controller
   default-flat-param-object: true
 
 # ==================== Knife4j ====================

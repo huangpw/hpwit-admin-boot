@@ -9,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
  */
 public class PasswordUtil {
 
-    private static final String SALT = "zyxhit-admin@2026";
+    private static final String SALT = "hpwit-admin@2026";
 
     // 生成盐
     public static String generateSalt() {

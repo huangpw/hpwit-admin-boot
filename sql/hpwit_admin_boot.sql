@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 80030 (8.0.30)
  Source Host           : 127.0.0.1:3306
- Source Schema         : zyxhit_admin_boot
+ Source Schema         : hpwit_admin_boot
 
  Target Server Type    : MySQL
  Target Server Version : 80030 (8.0.30)
@@ -271,8 +271,8 @@ INSERT INTO `sys_menu` VALUES (24, 0, '外链文档', 2, 'documents', '/document
 INSERT INTO `sys_menu` VALUES (25, 24, 'Vue', 1, 'documentsVue', '/documents/vue', '/demo/documents/vue/index', NULL, 1, 1, 'logos:vue', NULL, '0,24', 1, 1, 0, NULL, '2026-09-12 21:39:08', '2026-09-12 21:44:52');
 INSERT INTO `sys_menu` VALUES (26, 24, 'Vite', 1, 'documentsVite', '/documents/vite', '/demo/documents/vite/index', NULL, 1, 2, 'logos:vitejs', NULL, '0,24', 1, 1, 0, NULL, '2026-09-12 21:45:28', '2026-09-12 21:45:50');
 INSERT INTO `sys_menu` VALUES (27, 24, 'VueUse（外链）', 3, NULL, 'https://vueuse.org/guide/', NULL, NULL, 1, 3, 'logos:vueuse', NULL, '0,24', 1, 1, 0, NULL, '2026-09-12 21:47:06', '2026-09-12 21:47:27');
-INSERT INTO `sys_menu` VALUES (28, 24, 'Nova docs', 3, NULL, 'https://zyxhit-admin-docs.netlify.app/', NULL, NULL, 1, 4, 'local:logo', NULL, '0,24', 1, 1, 0, NULL, '2026-09-12 21:48:28', '2026-09-12 21:48:48');
-INSERT INTO `sys_menu` VALUES (29, 24, '公共示例页（外链）', 3, NULL, 'https://zyxhit-admin.pages.dev/public', NULL, NULL, 1, 5, 'local:logo', NULL, '0,24', 1, 1, 0, NULL, '2026-09-12 21:49:59', '2026-09-12 21:49:59');
+INSERT INTO `sys_menu` VALUES (28, 24, 'Nova docs', 3, NULL, 'https://hpwit-admin-docs.netlify.app/', NULL, NULL, 1, 4, 'local:logo', NULL, '0,24', 1, 1, 0, NULL, '2026-09-12 21:48:28', '2026-09-12 21:48:48');
+INSERT INTO `sys_menu` VALUES (29, 24, '公共示例页（外链）', 3, NULL, 'https://hpwit-admin.pages.dev/public', NULL, NULL, 1, 5, 'local:logo', NULL, '0,24', 1, 1, 0, NULL, '2026-09-12 21:49:59', '2026-09-12 21:49:59');
 INSERT INTO `sys_menu` VALUES (30, 0, '权限', 2, 'permission', '/permission', 'Layout', NULL, 1, 85, 'icon-park-outline:people-safe', NULL, '0', 1, 1, 0, NULL, '2026-09-12 21:50:55', '2026-09-12 21:50:55');
 INSERT INTO `sys_menu` VALUES (31, 30, '权限示例', 1, 'permissionDemo', '/permission/permission', '/demo/permission/permission/index', NULL, 1, 1, 'icon-park-outline:right-user', NULL, '0,30', 1, 1, 0, NULL, '2026-09-12 21:51:48', '2026-09-12 21:51:48');
 INSERT INTO `sys_menu` VALUES (32, 30, 'super可见', 1, 'justSuper', '/permission/justSuper', '/demo/permission/just-super/index', NULL, 1, 2, 'icon-park-outline:wrong-user', NULL, '0,30', 1, 1, 0, NULL, '2026-09-12 21:52:25', '2026-09-13 02:59:09');

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: zyxhit-admin-boot
+    name: hpwit-admin-boot
   profiles:
     active: local
 #    active: dev

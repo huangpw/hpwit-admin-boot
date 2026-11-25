@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * <p>标注在写接口方法上，指定时间窗口内同一用户对同一请求只允许提交一次，默认 5 秒。</p>
  *
  * <p>移植自 youlai-boot（{@code com.youlai.boot.framework.web.repeatsubmit.RepeatSubmit}，
- * by Ray.Hao @since 2.3.0），适配 zyxhit-admin 的 Redis 客户端（StringRedisTemplate）。</p>
+ * by Ray.Hao @since 2.3.0），适配 hpwit-admin 的 Redis 客户端（StringRedisTemplate）。</p>
  *
  * @author Ray.Hao
  * @since 2.3.0

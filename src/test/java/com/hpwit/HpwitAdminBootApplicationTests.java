@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * zyxhit-admin-boot 启动上下文测试
+ * hpwit-admin-boot 启动上下文测试
  */
 @SpringBootTest
 class HpwitAdminBootApplicationTests {

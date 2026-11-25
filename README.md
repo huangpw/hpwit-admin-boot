@@ -1,4 +1,4 @@
-# zyxhit-admin-boot
+# hpwit-admin-boot
 
 ## 防重复提交注解
 
@@ -50,16 +50,16 @@ public Result<?> addRole(@Valid @RequestBody SysRoleForm roleForm) {
 
 | 文件                                                         | 说明                                                         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [RateLimiterFilter.java](F:\Projects\zyxhit-admin-boot\src\main\java\com\hpwit\core\filter\RateLimiterFilter.java) | IP 限流过滤器本体，逻辑与 youlai 一致：Redis `INCR` + 1 秒过期窗口计数同一 IP 的请求数，超过阈值返回 423；阈值从 `sysConfigService.getSystemConfig("IP_QPS_THRESHOLD_LIMIT")` 实时读取，未配置则记 warn 跳过限流，转换失败回退默认 10 |
-| [FilterConfig.java](F:\Projects\zyxhit-admin-boot\src\main\java\com\hpwit\config\FilterConfig.java) | 过滤器注册。这是本项目与 youlai 唯一的架构差异：youlai 注册在 Spring Security 过滤器链里，nova 用的是 Sa-Token（MVC 拦截器），所以改用 `FilterRegistrationBean`，order=-100 排在 CORS（-101）之后——预检请求不会在 CorsFilter 终止前被计数，也不会被限流挡掉 |
-| [WebUtil.java](F:\Projects\zyxhit-admin-boot\src\main\java\com\hpwit\common\utils\WebUtil.java) | 过滤器里无法走 `@RestControllerAdvice`，用它直接向响应体写 `Result` JSON；HTTP 状态码与业务码保持一致（都是 423），符合 `ResultCode`「对应HTTP错误码」的既有约定 |
-| [seed_config.sql](F:\Projects\zyxhit-admin-boot\sql\seed_config.sql) | 项目里原本没有 `sys_config` 的建表脚本和预置数据，缺了它过滤器会一直跳过限流。按 nova 的 SQL 风格建表并预置 `IP_QPS_THRESHOLD_LIMIT = 10`，可重复执行 |
+| [RateLimiterFilter.java](F:\Projects\hpwit-admin-boot\src\main\java\com\hpwit\core\filter\RateLimiterFilter.java) | IP 限流过滤器本体，逻辑与 youlai 一致：Redis `INCR` + 1 秒过期窗口计数同一 IP 的请求数，超过阈值返回 423；阈值从 `sysConfigService.getSystemConfig("IP_QPS_THRESHOLD_LIMIT")` 实时读取，未配置则记 warn 跳过限流，转换失败回退默认 10 |
+| [FilterConfig.java](F:\Projects\hpwit-admin-boot\src\main\java\com\hpwit\config\FilterConfig.java) | 过滤器注册。这是本项目与 youlai 唯一的架构差异：youlai 注册在 Spring Security 过滤器链里，nova 用的是 Sa-Token（MVC 拦截器），所以改用 `FilterRegistrationBean`，order=-100 排在 CORS（-101）之后——预检请求不会在 CorsFilter 终止前被计数，也不会被限流挡掉 |
+| [WebUtil.java](F:\Projects\hpwit-admin-boot\src\main\java\com\hpwit\common\utils\WebUtil.java) | 过滤器里无法走 `@RestControllerAdvice`，用它直接向响应体写 `Result` JSON；HTTP 状态码与业务码保持一致（都是 423），符合 `ResultCode`「对应HTTP错误码」的既有约定 |
+| [seed_config.sql](F:\Projects\hpwit-admin-boot\sql\seed_config.sql) | 项目里原本没有 `sys_config` 的建表脚本和预置数据，缺了它过滤器会一直跳过限流。按 nova 的 SQL 风格建表并预置 `IP_QPS_THRESHOLD_LIMIT = 10`，可重复执行 |
 
 ## 放开的既有代码
 
-- [ResultCode.java:33](F:\Projects\zyxhit-admin-boot\src\main\java\com\hpwit\common\result\ResultCode.java#L33) — 423 `REQUEST_CONCURRENCY_LIMIT_EXCEEDED` 错误码（原本被注释）。
-- [SysConfigServiceImpl.java:44](F:\Projects\zyxhit-admin-boot\src\main\java\com\hpwit\system\service\impl\SysConfigServiceImpl.java#L44) — `@PostConstruct init()`，启动时把 `sys_config` 全表加载进 Redis Hash `system:config`。这是过滤器能读到配置的前提。
-- [SysConfigController.java:58](F:\Projects\zyxhit-admin-boot\src\main\java\com\hpwit\system\controller\SysConfigController.java#L58) — `PUT /v1/config/refresh` 手动刷新缓存接口。
+- [ResultCode.java:33](F:\Projects\hpwit-admin-boot\src\main\java\com\hpwit\common\result\ResultCode.java#L33) — 423 `REQUEST_CONCURRENCY_LIMIT_EXCEEDED` 错误码（原本被注释）。
+- [SysConfigServiceImpl.java:44](F:\Projects\hpwit-admin-boot\src\main\java\com\hpwit\system\service\impl\SysConfigServiceImpl.java#L44) — `@PostConstruct init()`，启动时把 `sys_config` 全表加载进 Redis Hash `system:config`。这是过滤器能读到配置的前提。
+- [SysConfigController.java:58](F:\Projects\hpwit-admin-boot\src\main\java\com\hpwit\system\controller\SysConfigController.java#L58) — `PUT /v1/config/refresh` 手动刷新缓存接口。
 
 ## 生效链路
 
@@ -77,3 +77,15 @@ public Result<?> addRole(@Valid @RequestBody SysRoleForm roleForm) {
 2. 后台改了阈值后**缓存不会自动更新**（与 youlai 行为一致，`edit()` 不刷缓存），需要调一次 `PUT /v1/config/refresh` 或重启才生效。
 3. 限流粒度是**固定 1 秒窗口**的简单计数（非滑动窗口、非令牌桶），适合防单 IP 高频刷接口；如果以后要更精确的限流，可以考虑换 Redis + Lua 或 Bucket4j，当前的实现和参考项目保持一致。
 4. 删除配置行或缓存缺失时过滤器只是跳过限流（不拦截任何请求），不会影响服务可用性。
+
+
+
+## 拾物记【APP+小程序】
+
+- 数据库表前缀
+
+  | 前缀   | 含义                      | 推荐度 |
+  | ------ | ------------------------- | ------ |
+  | `pam_` | Personal Asset Management | 首选   |
+
+- 腾讯云OSS

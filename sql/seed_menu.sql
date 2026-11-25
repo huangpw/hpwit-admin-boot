@@ -1,6 +1,6 @@
 -- ============================================================
--- zyxhit-admin-boot 菜单/角色/权限 seed
--- 对应前端 zyxhit-admin 的 routes.static.ts 现有菜单结构
+-- hpwit-admin-boot 菜单/角色/权限 seed
+-- 对应前端 hpwit-admin 的 routes.static.ts 现有菜单结构
 -- 重跑前请先清表：TRUNCATE sys_role_menu; TRUNCATE sys_user_role;
 --                  DELETE FROM sys_menu; DELETE FROM sys_role;
 -- 适用 MySQL 8.x（utf8mb4 / InnoDB）
@@ -140,7 +140,7 @@ VALUES
 
 -- 外链的 route_path 改成实际跳转地址（CurrentMenuDto 转换时 link 类型会复制到 href）
 UPDATE sys_menu SET route_path = 'https://vueuse.org/guide/'           WHERE id = 503;
-UPDATE sys_menu SET route_path = 'https://zyxhit-admin-docs.netlify.app/' WHERE id = 504;
+UPDATE sys_menu SET route_path = 'https://hpwit-admin-docs.netlify.app/' WHERE id = 504;
 UPDATE sys_menu SET route_path = '/public'                              WHERE id = 505;
 
 -- ============================================================
