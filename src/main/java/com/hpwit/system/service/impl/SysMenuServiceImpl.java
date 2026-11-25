@@ -30,6 +30,7 @@ import com.hpwit.system.service.SysMenuService;
 import com.hpwit.system.service.SysRoleMenuService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -46,6 +47,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     private SysMenuConverter sysMenuConverter;
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
+    @Value("${hpwit.flowable.enabled:false}")
+    private boolean flowableEnabled;
 
     /**
      * 菜单列表
@@ -180,7 +183,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         } else {
             menuList = this.baseMapper.getMenusByRoleCodes(roleCodes);
         }
-        return buildRoutes(SysConstant.ROOT_NODE_ID, menuList);
+        return buildRoutes(SysConstant.ROOT_NODE_ID, availableRoutes(menuList));
     }
 
     /**
@@ -282,7 +285,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             menuList = this.baseMapper.getMenusByRoleCodes(roleCodes);
         }
 
-        List<CurrentMenuDto> menuRoutes = menuList.stream().map(menu -> {
+        List<CurrentMenuDto> menuRoutes = availableRoutes(menuList).stream().map(menu -> {
             CurrentMenuDto dto = new CurrentMenuDto();
             dto.setId(menu.getId());
             dto.setPid(menu.getParentId() == 0 ? null : menu.getParentId());
@@ -324,6 +327,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return menuRoutes;
     }
 
+
+    private List<SysMenu> availableRoutes(List<SysMenu> menus) {
+        if (flowableEnabled) {
+            Set<Long> parentIds = menus.stream().map(SysMenu::getParentId).collect(Collectors.toSet());
+            return menus.stream().filter(menu -> !("flowable".equals(menu.getRouteName())
+                    || "flowableApproval".equals(menu.getRouteName())) || parentIds.contains(menu.getId())).toList();
+        }
+        return menus.stream().filter(menu -> {
+            String path = menu.getRoutePath();
+            return path == null || !(path.equals("/flowable") || path.startsWith("/flowable/"));
+        }).toList();
+    }
 
     /**
      * 递归生成菜单列表

@@ -14,3 +14,9 @@ spring:
 # 在 banner.txt 中显示项目版本，使用 @project.version@ 从 pom.xml 获取
 project:
   version: "@project.version@"
+
+# 审批模块。生产环境先初始化数据库，再开启模块。
+hpwit:
+  flowable:
+    enabled: ${HPWIT_FLOWABLE_ENABLED:false}
+    schema-update: ${HPWIT_FLOWABLE_SCHEMA_UPDATE:false}

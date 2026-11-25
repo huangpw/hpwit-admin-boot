@@ -30,6 +30,7 @@
             t1.type,
             t1.always_show,
             t1.keep_alive,
+            t1.requires_auth,
             t1.params
         FROM
         sys_menu t1

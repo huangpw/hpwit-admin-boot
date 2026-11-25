@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS flow_approval_status_callback (
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    endpoint VARCHAR(64) NOT NULL,
+    business_page VARCHAR(64) NOT NULL,
+    business_no VARCHAR(100) NOT NULL,
+    instance_id VARCHAR(64) NOT NULL,
+    applicant_id BIGINT NOT NULL,
+    approval_status VARCHAR(16) NOT NULL,
+    business_status INT NOT NULL,
+    operation_id VARCHAR(36) NOT NULL DEFAULT '',
+    operation_payload MEDIUMTEXT,
+    attempts INT NOT NULL DEFAULT 0,
+    next_attempt_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    lease_until TIMESTAMP(3) NULL,
+    claim_token VARCHAR(36),
+    delivered_at TIMESTAMP(3) NULL,
+    last_error VARCHAR(200),
+    CONSTRAINT uk_flow_callback_event UNIQUE (instance_id, approval_status, operation_id),
+    INDEX idx_flow_callback_due (delivered_at, next_attempt_at, id),
+    INDEX idx_flow_callback_business (business_page, business_no, delivered_at, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
