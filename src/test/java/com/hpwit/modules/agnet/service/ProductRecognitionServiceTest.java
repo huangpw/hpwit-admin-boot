@@ -67,6 +67,12 @@ class ProductRecognitionServiceTest {
             assertThat(request.get().at("/messages/1/content/1/image_url/url").asText())
                     .isEqualTo("data:image/webp;base64," + webpBase64);
 
+            assertThat(service.recognizeMultiple(1L, List.of(image, webp)).productName()).isEqualTo("无线耳机");
+            JsonNode content = request.get().at("/messages/1/content");
+            assertThat(content.size()).isEqualTo(3);
+            assertThat(content.at("/1/image_url/url").asText()).startsWith("data:image/png;base64,");
+            assertThat(content.at("/2/image_url/url").asText()).isEqualTo("data:image/webp;base64," + webpBase64);
+
             modelContent.set("{\"productName\":null}");
             assertThatThrownBy(() -> service.recognize(1L, image))
                     .isInstanceOfSatisfying(BusinessException.class,
@@ -87,6 +93,18 @@ class ProductRecognitionServiceTest {
         assertThatThrownBy(() -> service("http://127.0.0.1:1").recognize(1L, invalidFile))
                 .isInstanceOfSatisfying(BusinessException.class,
                         error -> assertThat(error.getResultCode()).isEqualTo(ResultCode.INVALID_USER_INPUT));
+    }
+
+    @Test
+    void rejectsInvalidMultiImageCountOrTotalSizeBeforeCallingDeepSeek() {
+        ProductRecognitionService service = service("http://127.0.0.1:1");
+        MockMultipartFile file = new MockMultipartFile("files", "photo.png", "image/png", new byte[8 * 1024 * 1024]);
+        assertThatThrownBy(() -> service.recognizeMultiple(1L, List.of(file)))
+                .isInstanceOfSatisfying(BusinessException.class,
+                        error -> assertThat(error.getMessage()).contains("2 至 5 张"));
+        assertThatThrownBy(() -> service.recognizeMultiple(1L, List.of(file, file, file, file)))
+                .isInstanceOfSatisfying(BusinessException.class,
+                        error -> assertThat(error.getMessage()).contains("24 MB"));
     }
 
     private ProductRecognitionService service(String baseUrl) {

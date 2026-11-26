@@ -24,7 +24,9 @@ import javax.imageio.stream.MemoryCacheImageInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,6 +43,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DeepSeekVisionService {
 
     private static final long MAX_BYTES = 8L * 1024 * 1024;
+    // 为 Base64 编码和请求体中的其他字段预留空间。
+    private static final long MAX_TOTAL_BYTES = 24L * 1024 * 1024;
     private static final long MAX_PIXELS = 24_000_000;
     private final ObjectMapper objectMapper;
     private final WebClient deepSeek;
@@ -67,8 +71,20 @@ public class DeepSeekVisionService {
     }
 
     JsonNode recognize(long userId, MultipartFile file, String prompt, int maxTokens, Duration timeout) {
-        if (file == null || file.isEmpty() || file.getSize() > MAX_BYTES) {
-            throw new BusinessException(ResultCode.INVALID_USER_INPUT, "请选择 8 MB 以内的图片");
+        return recognizeImages(userId, Collections.singletonList(file), prompt, maxTokens, timeout);
+    }
+
+    /** 按上传顺序校验图片，再将所有图片放入同一次模型请求。 */
+    JsonNode recognizeImages(long userId, List<MultipartFile> files, String prompt, int maxTokens, Duration timeout) {
+        long totalBytes = 0;
+        for (MultipartFile file : files) {
+            if (file == null || file.isEmpty() || file.getSize() > MAX_BYTES) {
+                throw new BusinessException(ResultCode.INVALID_USER_INPUT, "请选择有效且不超过 8 MB 的图片");
+            }
+            totalBytes += file.getSize();
+            if (totalBytes > MAX_TOTAL_BYTES) {
+                throw new BusinessException(ResultCode.INVALID_USER_INPUT, "图片总大小不能超过 24 MB");
+            }
         }
         if (apiKey.isEmpty()) {
             throw new BusinessException(ResultCode.INTERNAL_SERVER_ERROR, "识图服务尚未配置 DeepSeek API Key");
@@ -81,7 +97,8 @@ public class DeepSeekVisionService {
             if (requestCounts.get(userId, ignored -> new AtomicInteger()).incrementAndGet() > 8) {
                 throw new BusinessException(ResultCode.REQUEST_CONCURRENCY_LIMIT_EXCEEDED, "识别次数过多，请稍后重试");
             }
-            return requestRecognition(readImage(file), prompt, maxTokens, timeout);
+            List<String> imageUrls = files.stream().map(this::readImage).toList();
+            return requestRecognition(imageUrls, prompt, maxTokens, timeout);
         } finally {
             concurrentRequests.release();
         }
@@ -129,7 +146,12 @@ public class DeepSeekVisionService {
      * 调用 DeepSeek Chat Completions 接口，在同一条消息中发送文本和图片。
      * 按 HTTP 状态区分鉴权、余额和限流等错误，给前端返回对应提示。
      */
-    private JsonNode requestRecognition(String imageUrl, String prompt, int maxTokens, Duration timeout) {
+    private JsonNode requestRecognition(List<String> imageUrls, String prompt, int maxTokens, Duration timeout) {
+        List<Map<String, Object>> content = new ArrayList<>(imageUrls.size() + 1);
+        content.add(Map.of("type", "text", "text", "请按要求识别图片并输出 JSON。"));
+        for (String imageUrl : imageUrls) {
+            content.add(Map.of("type", "image_url", "image_url", Map.of("url", imageUrl)));
+        }
         var body = Map.of(
                 "model", model,
                 "thinking", Map.of("type", "disabled"),
@@ -137,10 +159,7 @@ public class DeepSeekVisionService {
                 "max_tokens", maxTokens,
                 "messages", List.of(
                         Map.of("role", "system", "content", prompt),
-                        Map.of("role", "user", "content", List.of(
-                                Map.of("type", "text", "text", "请按要求识别图片并输出 JSON。"),
-                                Map.of("type", "image_url", "image_url", Map.of("url", imageUrl))
-                        ))
+                        Map.of("role", "user", "content", content)
                 )
         );
         JsonNode response;

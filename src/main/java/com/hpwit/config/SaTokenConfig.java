@@ -2,8 +2,12 @@ package com.hpwit.config;
 
 import cn.dev33.satoken.dao.SaTokenDao;
 import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
+import cn.dev33.satoken.filter.SaTokenContextFilterForJakartaServlet;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.util.SaTokenConsts;
+import jakarta.servlet.DispatcherType;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -63,8 +67,18 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 //.excludePathPatterns("/user/login")
                 .excludePathPatterns(whiteList)
-                // 开启异步支持（解决之前的AsyncRequestNotUsableException）
                 .order(0);
+    }
+
+    @Bean
+    public FilterRegistrationBean<SaTokenContextFilterForJakartaServlet> saTokenContextFilterRegistration(
+            SaTokenContextFilterForJakartaServlet filter) {
+        var registration = new FilterRegistrationBean<>(filter);
+        // SSE 结束后 MVC 会重新派发请求，拦截器仍需要当前线程的 Sa-Token 上下文。
+        registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
+        registration.setAsyncSupported(true);
+        registration.setOrder(SaTokenConsts.SA_TOKEN_CONTEXT_FILTER_ORDER);
+        return registration;
     }
 
     /** 配置 RedisTemplate 序列化 */
