@@ -130,3 +130,14 @@ sms:
       login: SMS_xxx_001      # 登录验证码
       register: SMS_xxx_002   # 注册验证码
       mobile: SMS_xxx_003     # 换绑手机验证码
+
+# ==================== 流程与AI ====================
+hpwit:
+  flowable:
+    enabled: true
+    schema-update: ${HPWIT_FLOWABLE_SCHEMA_UPDATE:false}
+  agnet:
+    deepseek:
+      base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+      model: ${DEEPSEEK_MODEL:deepseek-flash}
+      api-key: ${DEEPSEEK_API_KEY:}

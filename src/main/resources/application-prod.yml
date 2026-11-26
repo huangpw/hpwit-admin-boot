@@ -101,3 +101,14 @@ knife4j:
   production: true
   setting:
     language: zh_cn
+
+# ==================== 流程与AI ====================
+hpwit:
+  flowable:
+    enabled: true
+    schema-update: ${HPWIT_FLOWABLE_SCHEMA_UPDATE:false}
+  agnet:
+    deepseek:
+      base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+      model: ${DEEPSEEK_MODEL:deepseek-flash}
+      api-key: ${DEEPSEEK_API_KEY:}

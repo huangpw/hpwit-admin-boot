@@ -39,6 +39,7 @@
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
 
         <zxing.version>3.5.3</zxing.version>
+        <twelvemonkeys.version>3.15.3</twelvemonkeys.version>
         <ip2region.version>2.7.0</ip2region.version>
         <fastjson.version>2.0.60</fastjson.version>
 
@@ -244,6 +245,13 @@
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
             <version>${fastjson.version}</version>
+        </dependency>
+
+        <!-- AI 识图的 WebP 解码 -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-webp</artifactId>
+            <version>${twelvemonkeys.version}</version>
         </dependency>
 
         <!-- 生成二维码 -->
