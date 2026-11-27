@@ -14,11 +14,11 @@ CREATE TABLE IF NOT EXISTS sys_role (
     sort         INT          NOT NULL DEFAULT 0 COMMENT '排序',
     status       TINYINT      NOT NULL DEFAULT 1 COMMENT '1启用 0停用',
     data_scope   TINYINT      NOT NULL DEFAULT 1 COMMENT '1全部 2本部门 3本部门及下 4本部门及上 5仅本人 6自定义',
-    is_deleted   TINYINT      NOT NULL DEFAULT 0,
-    create_by    BIGINT                DEFAULT NULL,
-    update_by    BIGINT                DEFAULT NULL,
-    create_time  DATETIME              DEFAULT CURRENT_TIMESTAMP,
-    update_time  DATETIME              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted   TINYINT      NOT NULL DEFAULT 0 COMMENT '是否删除(0-否 1-是)',
+    create_by    BIGINT                DEFAULT NULL COMMENT '创建人ID',
+    update_by    BIGINT                DEFAULT NULL COMMENT '更新人ID',
+    create_time  DATETIME              DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time  DATETIME              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id),
     UNIQUE KEY uk_code (code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
@@ -35,31 +35,31 @@ CREATE TABLE IF NOT EXISTS sys_menu (
     perm            VARCHAR(128)           DEFAULT NULL COMMENT '权限标识',
     visible         TINYINT       NOT NULL DEFAULT 1 COMMENT '1显示 0隐藏',
     sort            INT           NOT NULL DEFAULT 0 COMMENT '排序',
-    icon            VARCHAR(64)            DEFAULT NULL,
-    redirect        VARCHAR(255)           DEFAULT NULL,
+    icon            VARCHAR(64)            DEFAULT NULL COMMENT '菜单图标',
+    redirect        VARCHAR(255)           DEFAULT NULL COMMENT '跳转路径',
     tree_path       VARCHAR(255)           DEFAULT NULL COMMENT '祖先路径，逗号分隔',
     keep_alive      TINYINT       NOT NULL DEFAULT 0 COMMENT '1开启缓存',
     always_show     TINYINT       NOT NULL DEFAULT 0 COMMENT '目录始终显示',
     requires_auth   TINYINT       NOT NULL DEFAULT 1 COMMENT '1需要登录',
     params          VARCHAR(1024)          DEFAULT NULL COMMENT 'JSON 路由参数',
-    is_deleted      TINYINT       NOT NULL DEFAULT 0,
-    create_time     DATETIME               DEFAULT CURRENT_TIMESTAMP,
-    update_time     DATETIME               DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted      TINYINT       NOT NULL DEFAULT 0 COMMENT '逻辑删除标识（0 未删除，1 已删除）',
+    create_time     DATETIME               DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time     DATETIME               DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (id),
     KEY idx_parent (parent_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='菜单表';
 
 -- ----- 3. sys_role_menu 角色-菜单关联 -----
 CREATE TABLE IF NOT EXISTS sys_role_menu (
-    role_id BIGINT NOT NULL,
-    menu_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL COMMENT '角色ID',
+    menu_id BIGINT NOT NULL COMMENT '菜单ID',
     PRIMARY KEY (role_id, menu_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色菜单关联';
 
 -- ----- 4. sys_user_role 用户-角色关联 -----
 CREATE TABLE IF NOT EXISTS sys_user_role (
-    user_id BIGINT NOT NULL,
-    role_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    role_id BIGINT NOT NULL COMMENT '角色ID',
     PRIMARY KEY (user_id, role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联';
 
